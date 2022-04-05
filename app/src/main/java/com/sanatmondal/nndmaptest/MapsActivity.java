@@ -1,0 +1,71 @@
+package com.sanatmondal.nndmaptest;
+
+import androidx.fragment.app.FragmentActivity;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    private static final String TAG = "MapsActivity";
+
+    private GoogleMap mMap;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate: ");
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.i(TAG, "onMapReady: ");
+        mMap = googleMap;
+
+        LatLng mohakhali = new LatLng(23.7778, 90.4057);
+        MarkerOptions options = new MarkerOptions().position(mohakhali).title("Marker mohakhali");
+        options.icon(BitmapDescriptorFactory.fromBitmap(getBitmapMarker(R.drawable.customemarker)));
+        mMap.addMarker(options);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mohakhali));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mohakhali, 15f));
+    }
+
+    // This method can convert the drawable image to bitmap image
+    private Bitmap getBitmapMarker(int markerIcon){
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(400, 400, conf);
+        Canvas canvas1 = new Canvas(bmp);
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inMutable = true;
+        Bitmap imageBitmap=BitmapFactory.decodeResource(getResources(), markerIcon, opt);
+        Bitmap resized = Bitmap.createScaledBitmap(imageBitmap, 100, 100, true);
+        canvas1.drawBitmap(resized, 40, 40, null);
+
+        return bmp;
+    }
+}
